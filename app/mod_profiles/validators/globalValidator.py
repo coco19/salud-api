@@ -178,8 +178,12 @@ def is_valid_time_format(var):
     Traceback (most recent call last):
         ...
     ValueError: El formato del tiempo no es válido
+
+    >>> is_valid_time_format('13:32:22')
+    [13, 32, 22]
+
     """
-    var = match(r'\d{1,2}:\d{1,2}:\d{1,2}.\d{1,6}$', var)
+    var = match(r'\d{1,2}:\d{1,2}:\d{1,2}(.\d{1,6})?$', var)
     if not var:
         raise ValueError("El formato del tiempo no es válido")
     else:
@@ -195,10 +199,14 @@ def is_valid_time(var):
         raise ValueError("Error en los minutos de la fecha")
     elif not 0 <= list_var[2] < 60:
         raise ValueError("Error en los segundos de la fecha")
-    elif not (0 <= list_var[3] < 1000000):
-        raise ValueError("Error en los microsegundos de la fecha")
     else:
-        return time(list_var[0], list_var[1], list_var[2], list_var[3])
+        try:
+            if not 0 <= list_var[3] < 1000000:
+                raise ValueError("Error en los microsegundos de la fecha")
+            else:
+                return time(list_var[0], list_var[1], list_var[2], list_var[3])
+        except IndexError:
+            return time(list_var[0], list_var[1], list_var[2])
 
 
 def is_valid_datetime(var):
@@ -226,8 +234,11 @@ def is_valid_datetime(var):
         ...
     ValueError: El formato del tiempo no es válido
 
+    >>> is_valid_datetime("2015-09-12T13:32:22")
+    datetime.datetime(2015, 9, 12, 13, 32, 22)
+
     """
-    matching = match(r'(^[\d-]{8,10})[^0-9-:.]([\d:.]*$)', var)
+    matching = match(r'(^.*)[^0-9-:.](.*$)', var)
     date_var = is_valid_date(matching.group(1))
     time_var = is_valid_time(matching.group(2))
     return datetime(date_var.year, date_var.month, date_var.day, time_var.hour, time_var.minute, time_var.second,
