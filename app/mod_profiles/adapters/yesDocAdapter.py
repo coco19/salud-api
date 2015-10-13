@@ -27,5 +27,5 @@ class YesDocAdapter(object):
         return res
 
     def download_file(self, path):
-        var = open(path)
-        return var.read()
+        with open(path) as var:
+            return var.read()

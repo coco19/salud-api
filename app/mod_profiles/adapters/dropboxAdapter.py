@@ -39,9 +39,10 @@ class DropboxAdapter(object):
 
     def download_file(self, path):
         dbx = dropbox.Dropbox(self.token)
+        print "Se ejecuta este contenido"
         try:
             fmd, res = dbx.files_download(path)
         except exceptions.HttpError as err:
             print '*** HTTP error', err.message
             return None
-        return res
+        return res.content
